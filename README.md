@@ -1,2 +1,2 @@
-# assets
-Course resources
+# INF0413 - Course resources
+
