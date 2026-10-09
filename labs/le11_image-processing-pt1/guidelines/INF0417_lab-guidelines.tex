@@ -1,0 +1,182 @@
+\documentclass[a4paper, 10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{indentfirst} % first line indentation
+\usepackage{pifont} % hand-right icon
+\usepackage{marginnote} % notes on margins
+\usepackage{sectsty}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage[english]{babel}
+\usepackage{biblatex}
+\addbibresource{references.bib}
+\usepackage{xcolor}
+\usepackage{listings} % insert code snippets
+\usepackage{hyperref}
+
+% Graphics path
+\graphicspath{{../../../fig/}}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+% Bibliography style
+\title{Image Processing in \textsc{Python}}
+\author{Prof. Dr. Aldo André Díaz-Salazar}
+\date{}
+
+% User definitions
+\newcommand{\lt}{\ensuremath <}
+\newcommand{\gt}{\ensuremath >}
+\newcommand{\Figureref}[1]{\hyperref[#1]{Figure~\ref*{#1}}}
+
+\hypersetup{
+	%pagebackref=true,
+	pdftitle={\@title},
+	pdfauthor={\@author},
+	pdfcreator={LaTeX with abnTeX2},
+	pdfkeywords={abnt}{latex}{abntex}{abntex2}{academic work},
+	hidelinks,					% desabilita as bordas dos links
+	colorlinks=true,       	% false: boxed links; true: colored links
+	linkcolor=blue,          	% color of internal links
+	citecolor=blue,        		% color of links to bibliography
+	filecolor=magenta,      	% color of file links
+	urlcolor=blue,
+%	linkbordercolor={1 1 1},	% set to white
+	bookmarksdepth=4
+}
+
+% Space between matrix brackets
+\makeatletter
+\renewenvironment{bmatrix}
+{\left[\mkern10mu\env@matrix}
+{\endmatrix\mkern10mu\right]}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\begin{document}
+	\noindent
+	\begin{minipage}{1.7cm}
+		{\includegraphics[trim=34.1cm 91.3cm 46.4cm 21cm,clip,width=.70\textwidth]{Marca_UFG.pdf}}
+	\end{minipage}	
+	\begin{minipage}{.8\textwidth}
+		\center
+		\hspace*{\fill}\\
+		{\large Federal University of Goias} \\
+		{\large Institute of Informatics} \\
+		{\Large INF0417 -- Computer vision}
+	\end{minipage}
+	\begin{minipage}{2.2cm}
+		{\includegraphics[trim=0cm 0cm 0cm 0cm,clip,width=.70\textwidth]{Marca_INF.pdf}} % marca INF
+	\end{minipage}
+%	\vspace{-1em}
+
+	\begin{minipage}{\textwidth}
+		\maketitle
+	\end{minipage}
+
+\section{Introduction}
+During this tutorial, the goal is to become familiar with Python and the NumPy library.
+You should also get a better feeling for how images are represented as matrices as well as the connection between mathematical expressions and the Python code to implement them.
+We additionally provide a guide for how to get started with using an IDE for python, which will make your life much easier during the projects.
+
+\subsection{Exercises}
+\begin{enumerate}
+	\item Make sure that you’ve downloaded the notebook for this lesson at SIGAA:
+	\begin{center} \vspace{-1em}
+		\texttt{INF0417\_python-tutorial.ipynb}
+	\end{center}
+	\item Start a Jupyter notebook from a terminal:
+	\begin{center} \vspace{-1em}
+		\texttt{jupyter notebook}
+	\end{center}
+	\item Find the correct notebook and open it.
+	\item Follow the instructions in there.
+\end{enumerate}
+
+\section{Software tools}
+This section covers unit tests, and development tools.
+None of this is strictly part of the course, but they are very useful.
+
+\subsection{Development tools}
+There exist a large number of different development tools for Python, ranging from a text-editor like \texttt{atom} that can make it easy to get started, to full IDEs, such as
+\texttt{pycharm}.
+Getting started using an IDE such as \texttt{pycharm might} require some time to get familiar with the program, but it will usually save time in the long run due to the very useful auto-complete functions and integrated debugging functionality.
+
+For the projects we strongly recommend that you use \texttt{pycharm} or \texttt{vscode}.
+
+\begin{itemize}
+	\item \textbf{Task 1:} Open \texttt{vscode}. Try creating a python file and running it.
+	\item \textbf{Task 2:} Open \texttt{pycharm}. Try creating a python file and running it.
+\end{itemize}
+
+Both these IDEs will provide you with a good development environment.
+Choose whichever you feel more comfortable with.
+
+\subsection{Unit tests}
+When writing programs larger than a few lines it is often useful to test the intermediate steps of the program in isolation.
+There are (at least) two reasons for this:
+\begin{enumerate}
+	\item It helps you define what each part of the program should actually do.
+	\item It makes sure that it actually does what you intended in isolation from the other parts.
+\end{enumerate}
+
+
+For larger projects involving multiple people, \textbf{unit tests} can allow you to test each component in isolation for some simple cases.
+A unit-test is a function that calls another function you want to test with the arguments that should produce some known output, for example:
+
+\lstinputlisting[language=Python, firstline=1, lastline=7]{INF0417\_lab-guidelines.py}
+
+This function tests that the addition operation behaves as expected.
+\\
+Often you would write multiple tests so that you can be sure that edge cases are handled correctly.
+A more complicated example for a function that projects a point in an image:
+
+\lstinputlisting[language=Python, firstline=9, lastline=12]{INF0417\_lab-guidelines.py}
+
+With the tests being:
+
+\lstinputlisting[language=Python, firstline=14, lastline=24]{INF0417\_lab-guidelines.py}
+
+Try to implement the missing test cases.
+\begin{itemize}
+	\item \textbf{Hint:} Use the same camera matrix in all tests, but different points.
+\end{itemize}
+
+Note that the point of this exercise is as much to implement the tests as it is to think about what the result should be in each case.
+
+\printbibliography
+
+\end{document}
